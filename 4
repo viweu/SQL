@@ -1,0 +1,85 @@
+ задание 1
+ SELECT
+ p.product_name,
+ p.author,
+ c.category_name,
+ COUNT(od.order_id) AS order_count
+ FROM
+ Products p
+ INNER JOIN
+ Categories c ON p.category_id = c.category_id
+ LEFT JOIN
+ OrderDetails od ON p.product_id = od.product_id
+ GROUP BY
+ p.product_name, p.author, c.category_name;
+
+ задание 2
+ SELECT
+ order_id,
+ customer_id,
+ order_date,
+ total_amount,
+ CASE
+ WHEN shipper_id = (SELECT shipper_id FROM Shippers WHERE
+ shipper_name = 'СДЕК')
+ THEN 'Доставлено СДЕК'
+ ELSE 'Доставлено другим перевозчиком'
+ END AS delivery_status
+ FROM
+ Orders;
+
+ задание 3
+  SELECT
+ c.customer_name,
+ COUNT(o.order_id) AS order_count
+ FROM
+ Customers c
+ LEFT JOIN
+ Orders o ON c.customer_id = o.customer_id
+ GROUP BY
+ c.customer_name;
+
+ задание 4
+  SELECT c.customer_name
+ FROM Customers c
+ LEFT JOIN Orders o ON c.customer_id = o.customer_id
+ WHERE o.order_id IS NULL;
+
+ задание 5
+ -- 1. Создание таблицы HighValueOrders
+ CREATE TABLE HighValueOrders (
+ order_id INT,
+ customer_id INT,
+ total_amount DECIMAL(10, 2)
+ );-- 2. Вставка данных в HighValueOrders
+ INSERT INTO HighValueOrders (order_id, customer_id, total_amount)
+ SELECT
+ order_id,
+ customer_id,
+ total_amount
+ FROM
+ Orders
+ WHERE
+ total_amount > 500;
+-- Просмотр данных из таблицы HighValueOrders
+ SELECT * FROM HighValueOrders;
+
+ задание 6
+  SELECT
+ c.category_name,
+ SUM(od.quantity * p.price) AS total_sales,
+ AVG(p.price) AS avg_price,
+ MIN(p.price) AS min_price,
+ MAX(p.price) AS max_price,
+ COUNT(DISTINCT od.order_id) AS unique_orders
+ FROM
+ Categories c
+ JOIN
+ Products p ON c.category_id = p.category_id
+ JOIN
+ OrderDetails od ON p.product_id = od.product_id
+ GROUP BY
+ c.category_name
+ ORDER BY
+ total_sales DESC
+ LIMIT 5;
